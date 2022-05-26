@@ -1,0 +1,39 @@
+---
+title: "Interactions between males and females"
+output: html_notebook
+---
+
+```{r load packages}
+library(hyenaR)
+library(tidyverse)
+
+# load database from master thesis
+load_package_database.full(db.path = "../../../Database/Fisidata_20122021.sqlite")
+```
+
+```{r check interactions between females and males}
+
+conceptions_clean %>% 
+  select(femaleID, maleID) %>% 
+  unique() -> ids
+
+read_csv(file = "../../../Database/raw_data_20122021/interactions.csv") %>% 
+  filter(!is.na(sexual)) -> sexual_interactions
+
+sexual_interactions %>% 
+  select(sexual) %>% 
+  unique()
+
+# define ids
+# identify party 1 is not in ids
+# identify party 2 is not in ids
+# categories of non-id patterns
+# define multiple ids
+
+
+
+```
+
+
+
+
