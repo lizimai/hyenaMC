@@ -1,39 +1,97 @@
 ---
-title: "Interactions between males and females"
+title: "interaction_type between males and females"
 output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r load packages}
 library(hyenaR)
 library(tidyverse)
+library(lubridate)
 
 # load database from master thesis
-load_package_database.full(db.path = "../../../Database/Fisidata_20122021.sqlite")
+load_package_database.full(db.path = "../data/Fisidata_20122021.sqlite")
+
+read_csv(file = "../data/interactions.csv") %>% 
+  filter(!is.na(sexual)) -> sexual_interactions
 ```
 
-```{r check interactions between females and males}
-
-conceptions_clean %>% 
-  select(femaleID, maleID) %>% 
-  unique() -> ids
-
-read_csv(file = "../../../Database/raw_data_20122021/interactions.csv") %>% 
-  filter(!is.na(sexual)) -> sexual_interactions
-
+```{r check interaction_type between females and males}
 sexual_interactions %>% 
-  select(sexual) %>% 
-  unique()
+  group_by(sexual) %>% 
+  count() %>% 
+  arrange(-n)
 
 # define ids
 # identify party 1 is not in ids
 # identify party 2 is not in ids
 # categories of non-id patterns
 # define multiple ids
-
-
-
 ```
 
+```{r}
+sexual_interactions %>% 
+  filter(!sexual %in% c("ambiguous","at the kill", "bait very soft", "bait?", "def?","shad?","T-212","soft shadowing","mating?","foll?","bait soft")) %>% 
+  mutate(sexual = case_when(
+    sexual == "foll (+mating?)" ~ "foll",
+    sexual == "foll+mating?" ~ "foll",
+    sexual == "shadowing/mating?" ~ "shadowing",
+    TRUE ~ sexual
+  )) %>% 
+ mutate(interactionID = paste0("int_",1:n()),
+        interaction_type = str_extract_all(sexual, pattern = "[A-Za-z]+"),
+        list_ID1 = str_extract_all(party1, pattern = "[:alpha:]\\-[:digit:]{3}",),
+        list_ID2 = str_extract_all(party2, pattern = "[:alpha:]\\-[:digit:]{3}",),
+        num_int = lengths(interaction_type),
+        num_ID1 = lengths(list_ID1),
+        num_ID2 = lengths(list_ID2)) %>% 
+  filter(num_int != 0 & num_ID1 !=0 & num_ID2 !=0) %>% 
+  unnest_longer(interaction_type) %>% 
+  unnest_longer(list_ID1) %>% 
+  unnest_longer(list_ID2) -> sexual_interactions_clean_temp
+
+
+sexual_interactions_clean_temp %>%   
+  drop_na(list_ID1, list_ID2) %>% 
+  mutate(
+    interaction_type = case_when(
+      interaction_type == "foll" ~ "following",
+      interaction_type == "bait" ~ "baiting",
+      interaction_type == "shad" ~ "shadowing",
+      interaction_type == "def" ~ "defending",
+      interaction_type == "mount" ~ "mounting",
+      interaction_type == "follow" ~ "following",
+      interaction_type == "maiting" ~ "mating",
+      interaction_type == "defend" ~ "defending",
+      interaction_type == "shadow" ~ "shadowing",
+      interaction_type == "harass" ~ "harassment",
+      TRUE ~ interaction_type),
+    sex_ID1 = fetch_id_sex(list_ID1),
+    sex_ID2 = fetch_id_sex(list_ID2),
+      ) %>%
+  filter(sex_ID1 != sex_ID2) %>% 
+  mutate(female = if_else(sex_ID1 == "female", list_ID1, list_ID2),
+         male = if_else(sex_ID1 == "male", list_ID1, list_ID2),
+         date = as_date(date, format = "%d.%m.%y"),
+         date_time = as_datetime(paste(date, time)),
+         num_ind = num_ID1 + num_ID2) %>% 
+  select(interactionID, female, male, interaction_type, date, date_time, num_int, num_ind, interaction) -> sexual_interactions_clean
+  
+saveRDS(sexual_interactions_clean, "../data/sexual_interactions_clean.rda")
+
+
+#-> sexual_interaction_type_clean
+  # group_by(interaction_type) %>%
+  # count() %>%
+  # arrange(-n)
+# following, baiting, shadowing, defending, mating, mounting
+```
+
+
+```{r}
+
+```
 
 
 
