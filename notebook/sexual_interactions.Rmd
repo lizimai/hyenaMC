@@ -22,7 +22,6 @@ sexual_interactions %>%
   group_by(sexual) %>% 
   count() %>% 
   arrange(-n)
-
 # define ids
 # identify party 1 is not in ids
 # identify party 2 is not in ids
@@ -49,10 +48,10 @@ sexual_interactions %>%
   filter(num_int != 0 & num_ID1 !=0 & num_ID2 !=0) %>% 
   unnest_longer(interaction_type) %>% 
   unnest_longer(list_ID1) %>% 
-  unnest_longer(list_ID2) -> sexual_interactions_clean_temp
+  unnest_longer(list_ID2) -> sexualInteractionsClean_temp
 
 
-sexual_interactions_clean_temp %>%   
+sexualInteractionsClean_temp %>%   
   drop_na(list_ID1, list_ID2) %>% 
   mutate(
     interaction_type = case_when(
@@ -76,10 +75,9 @@ sexual_interactions_clean_temp %>%
          date = as_date(date, format = "%d.%m.%y"),
          date_time = as_datetime(paste(date, time)),
          num_ind = num_ID1 + num_ID2) %>% 
-  select(interactionID, female, male, interaction_type, date, date_time, num_int, num_ind, interaction) -> sexual_interactions_clean
+  select(interactionID, female, male, interaction_type, date, date_time, num_int, num_ind, interaction) -> sexualInteractionsClean
   
-saveRDS(sexual_interactions_clean, "../data/sexual_interactions_clean.rda")
-
+save(sexualInteractionsClean, file = "../data/sexualInteractionsClean.RData")
 
 #-> sexual_interaction_type_clean
   # group_by(interaction_type) %>%
@@ -90,6 +88,55 @@ saveRDS(sexual_interactions_clean, "../data/sexual_interactions_clean.rda")
 
 
 ```{r}
+load("../data/sexualInteractionsClean.RData")
+sexualInteractionsClean %>% 
+  mutate(
+    clan = hyenaR::fetch_id_clan.current(female, at = date, censored.to.last.clan = TRUE),
+    with_suitable_male = hyenaMC::fetch_dyad_is.rule.fitting.mate(female, male)) -> sexualInteractionsClean_temp
+  
+candidatesOnInteraction <- hyenaMC::create_id_mate.candidate(sexualInteractionsClean_temp$female, date = sexualInteractionsClean_temp$date,  sexualInteractionsClean_temp$clan)
+
+save(candidatesOnInteraction, file = "../data/candidatesOnInteraction.RData")
+
+candidatesOnInteraction %>% 
+  mutate(male_is_suitable =  hyenaMC::fetch_dyad_is.rule.fitting.mate(femaleID, candidateID)) -> candidatesOnInteraction_temp
+
+candidatesOnInteraction_temp %>% 
+  group_by(femaleID, date) %>% 
+  summarise(num_candidate = n(),
+            num_suit_candidate = sum(male_is_suitable),
+            num_na_candidate = sum(is.na(male_is_suitable))) -> candidatesOnInteraction_summary
+
+left_join(sexualInteractionsClean_temp, candidatesOnInteraction_summary, by = c("female" = "femaleID", "date" = "date")) %>% 
+  mutate(ratio_suit_cand = num_suit_candidate/num_candidate)-> sexualInteractionsClean_temp2
+
+sexualInteractionsClean_temp2 %>% 
+  filter(interaction_type == "following") %>% 
+  drop_na(with_suitable_male, ratio_suit_cand) %>% 
+ggplot(., aes(y=with_suitable_male, x=ratio_suit_cand)) +
+  geom_point() +
+  stat_smooth(method="glm", color="green", se=FALSE,
+                method.args = list(family=binomial))
+
+sexualInteractionsClean_temp2 %>% 
+  filter(interaction_type == "baiting") %>% 
+  drop_na(with_suitable_male, ratio_suit_cand) %>% 
+ggplot(., aes(y=with_suitable_male, x=ratio_suit_cand)) +
+  geom_point() +
+  stat_smooth(method="glm", color="red", se=FALSE,
+                method.args = list(family=binomial))
+
+sexualInteractionsClean_temp2 %>% 
+  filter(interaction_type == "shadowing") %>% 
+  drop_na(with_suitable_male, ratio_suit_cand) %>% 
+ggplot(., aes(y=with_suitable_male, x=ratio_suit_cand)) +
+  geom_point() +
+  stat_smooth(method="glm", color="blue", se=FALSE,
+                method.args = list(family=binomial))
+
+# make predictions when interaction is random
+
+
 
 ```
 
