@@ -20,6 +20,35 @@ fetch_dyad_is.rule.fitting.mate <- function(femaleID, maleID) {
   output$is_fitting
 }
 
+fetch_id_parity <- function(femaleID, date) {
+  
+  input <- tibble::tibble(femaleID = femaleID,
+                 date = date)
+  
+  femaleIDUnique <- unique(sort(femaleID))
+  
+  create_offspring_litterID.from.all(parentID = femaleIDUnique) %>% 
+    filter(!fetch_id_is.censored(parentID) & (filiation == "mother_social_genetic" | filiation == "mother_genetic" | filiation == "father")) %>% 
+    select(parentID, birthdate) %>% 
+    arrange(parentID, birthdate) %>%
+    unique() %>% 
+    group_by(parentID) %>% 
+    mutate(conceptionDate = birthdate - 110,
+           nextConceptionDate = dplyr::lead(conceptionDate, 1) -1,
+           litterSeq = row_number()) %>% 
+    ungroup() %>% 
+    select(parentID, conceptionDate, nextConceptionDate, litterSeq)-> litterTbl
+
+  input %>% 
+    arrange() %>% 
+    unique() %>% 
+    left_join(.,litterTbl,  by = c("femaleID"= "parentID"))  %>% 
+    filter((date >= conceptionDate & date < nextConceptionDate) | (date >= conceptionDate & is.na(nextConceptionDate))) -> parityTbl
+  
+  
+  left_join(input, parityTbl, by = c("date" = "date", "femaleID" = "femaleID")) %>% 
+              pull(litterSeq)
+}
 
 create_id_mate.candidate <- function(femaleID, date, clan) {
   

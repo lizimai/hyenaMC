@@ -2,3 +2,5 @@ Fisidata_03112020.sqlite
 Fisidata_20122021.sqlite
 interactions.csv
 sexual_interactions_clean.RData
+sexualInteractionsComprehensive.RData
+.DS_Store
