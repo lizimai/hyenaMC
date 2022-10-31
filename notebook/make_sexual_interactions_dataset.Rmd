@@ -13,7 +13,7 @@ library(lubridate)
 
 ```{r load database}
 # load database from master thesis
-load_package_database.full(db.path = "/data/Fisidata26082022.sqlite")
+load_package_database.full(db.path = "data/Fisidata26082022.sqlite")
 # sexual_interactions <- extract_database_table("interactions")%>% filter(!is.na(sexual))
 sexual_interactions <- read_csv(file = "/Users/lizimai/Google Drive/My Drive/MEME/Work/Projects/Berlin Hyena/Database/rawData26082022/interactions.csv") %>% filter(!is.na(sexual))
 ```

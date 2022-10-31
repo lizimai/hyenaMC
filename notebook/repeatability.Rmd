@@ -167,13 +167,14 @@ bind_rows(femaleChoices, maleChoices) %>%
          ), levels = c("Low", "Medium", "High"))) -> Choices
 
 source("R/R_rainclouds.R")
+
 Choices %>% 
   filter(!censored) %>% 
   drop_na(birthRank) %>%   
   ggplot(.,aes(x=birthRankCatRecode,y=choice, fill = birthRankCatRecode, colour = birthRankCatRecode))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = birthRankCatRecode, y = choice), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Number of successful matings')+xlab('Birth Rank')+
   ylim(0, 21)+
   coord_flip()+
@@ -202,7 +203,7 @@ create_id_starting.table(ID = find_pop_id.female.all()) %>%
 ggplot(femaleChoiceAll,aes(x=birthRankCatRecode, y=numberSuccessfulLitter, fill = birthRankCatRecode, colour = birthRankCatRecode))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = birthRankCatRecode, y = numberSuccessfulLitter), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Number of successful matings')+xlab('Birth Rank')+
   ylim(0, 21)+
   coord_flip()+
@@ -220,7 +221,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.rank.cat, y=male.rank, fill = fem.rank.cat, colour = fem.rank.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.rank.cat, y = male.rank), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Rank')+xlab('Female Rank Category')+
   ylim(-1, 1)+
   coord_flip()+
@@ -237,7 +238,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.age.cat, y=male.rank, fill = fem.age.cat, colour = fem.age.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.age.cat, y = male.rank), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Rank')+xlab('Female age Category')+
   ylim(-1, 1)+
   coord_flip()+
@@ -255,7 +256,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.parity.cat, y=male.rank, fill = fem.parity.cat, colour = fem.parity.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.parity.cat, y = male.rank), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Rank')+xlab('Female Parity Category')+
   ylim(-1, 1)+
   coord_flip()+
@@ -273,7 +274,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.rank.cat, y=male.age, fill = fem.rank.cat, colour = fem.rank.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.rank.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Age')+xlab('Female Rank Category')+
   ylim(0, 20)+
   coord_flip()+
@@ -291,7 +292,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.age.cat, y=male.age, fill = fem.age.cat, colour = fem.age.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.age.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Age')+xlab('Female Age Category')+
   ylim(0, 20)+
   coord_flip()+
@@ -309,7 +310,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.parity.cat, y=male.age, fill = fem.parity.cat, colour = fem.parity.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.parity.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Age')+xlab('Female Parity Category')+
   ylim(0, 20)+
   coord_flip()+
@@ -322,13 +323,14 @@ conceptions %>%
 ggsave("plots/raincloudMaleAgeFemaleParity.pdf", units = "cm", width = 12, height = 14)
 # primiparous females tend to mate with (much) more young males than pluriparous
 
-
+```
+```{r}
 conceptions %>% 
   drop_na(fem.rank.cat, male.parity) %>% 
   ggplot(.,aes(x=fem.rank.cat, y=male.parity, fill = fem.rank.cat, colour = fem.rank.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.rank.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Parity')+xlab('Female Rank Category')+
   ylim(0, 22)+
   coord_flip()+
@@ -346,7 +348,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.age.cat, y=male.parity, fill = fem.age.cat, colour = fem.age.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.age.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot(position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Parity')+xlab('Female Age Category')+
   ylim(0, 22)+
   coord_flip()+
@@ -363,7 +365,7 @@ conceptions %>%
   ggplot(.,aes(x=fem.parity.cat, y=male.parity, fill = fem.parity.cat, colour = fem.parity.cat))+
   geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust = 1.5, trim = FALSE)+
   geom_point(position = position_jitter(width = .15), size = .25)+
-  geom_boxplot(aes(x = fem.parity.cat, y = male.age), position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
+  geom_boxplot( position = position_nudge(x = .2, y = 0), outlier.shape = NA, alpha = 0.3, width = .05, colour = "black") +
   ylab('Male Parity')+xlab('Female Parity Category')+
   ylim(0, 22)+
   coord_flip()+

@@ -14,17 +14,17 @@ library(lme4)
 library(DHARMa)
 
 # load database from master thesis
-load_package_database.full(db.path = "../data/Fisidata_20122021.sqlite")
-load(file = "../data/sexualInteractionsFull.RData")
+load_package_database.full(db.path = "data/Fisidata_20122021.sqlite")
+load(file = "data/sexualInteractionsFull.RData")
 sexualInteractionsFull %>% 
-  filter(date >= "2010-12-01" & date <= "2013-04-30"  & clan %in%  c("S", "N", "L")) %>% 
+  #filter(date >= "2010-12-01" & date <= "2013-04-30"  & clan %in%  c("S", "N", "L")) %>% 
   mutate(female_rank_cat_comb = case_when(
     female_rank_cat == "0--33%" ~ "High",
     female_rank_cat == "33--67%" | female_rank_cat == "67--100%" ~ "Low and Medium",
     TRUE ~ NA_character_
   ))-> sexualInteractionsComprehensive
 
-save(sexualInteractionsComprehensive, file = "../data/sexualInteractionsComprehensive.RData")
+save(sexualInteractionsComprehensive, file = "data/sexualInteractionsComprehensive.RData")
 ```
 
 ```{r}
@@ -33,10 +33,7 @@ summary(fit_mate_choice)
 
 ```
 
-
-
 ```{r glmm for following behaviour}
-
 mean(sexualInteractionsEve$ratio_suit_cand)
 sexualInteractionsComprehensive %>% 
 ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male)) + 
@@ -45,7 +42,6 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male)) +
               method.args = list(family = "binomial"),
               se = TRUE)  +
   labs(title = "All sexual interaction")
-
 
 sexualInteractionsComprehensive %>% 
     filter(interaction_type %in% c("following")) %>% 
@@ -67,7 +63,6 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male)) +
               se = TRUE)  +
   labs(title = "shadowing") 
 
-
 sexualInteractionsComprehensive %>% 
     filter(interaction_type %in% c("baiting")) %>% 
 ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male)) + 
@@ -78,7 +73,6 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male)) +
               se = TRUE)  +
   labs(title = "baiting") 
 
-
 sexualInteractionsComprehensive %>% 
   drop_na(female_parity) %>% 
 ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male, colour = factor(female_parity_cat))) + 
@@ -87,7 +81,6 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male, colour = factor(femal
               method.args = list(family = "binomial"),
               se = TRUE)  +
   labs(title = "All sexual interaction")
-
 
 sexualInteractionsComprehensive %>% 
   filter(interaction_type %in% c("following")) %>% 
@@ -118,7 +111,6 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male, colour = factor(femal
               se = TRUE)  +
   labs(title = "All sexual interaction")
 
-
 sexualInteractionsComprehensive %>% 
   filter(interaction_type %in% c("following")) %>% 
   drop_na(female_rank_cat_comb) %>% 
@@ -138,17 +130,12 @@ ggplot(., aes(x = ratio_suit_cand, y = with_suitable_male, colour = factor(femal
               method.args = list(family = "binomial"),
               se = TRUE)  +
   labs(title = "shadowing")
-  
 
 fit_mate_choice <- glmmTMB(with_suitable_male ~ ratio_suit_cand + female_parity_cat + female_rank_cat + (1|female), family = binomial, data = sexualInteractionsComprehensive) 
-
-
-         
 
 # control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 # model comparison: whether include logit will make the model fit worse
 AIC(fit_mate_choice, fit_mate_choice_logit)
-
 
 sexualInteractionsFull
 ```
